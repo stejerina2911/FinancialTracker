@@ -16,31 +16,31 @@ categories = ["Needs", "Wants", "Savings/Debt Repayment"]
 # Set your OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Function to get category from OpenAI using gpt-3.5-turbo
+# Function to get category from OpenAI using the updated interface
 def get_category(description):
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are an assistant that categorizes expenses into one of the following categories: "
-                "Needs, Wants, Savings/Debt Repayment.\n"
-                "Only respond with the category name.\n"
-                "\n"
-                "**Definitions:**\n"
-                "- **Needs**: Essential expenses required for basic living (e.g., rent, utilities, groceries, transportation for work).\n"
-                "- **Wants**: Non-essential expenses for enjoyment (e.g., dining out, entertainment, vacations, hobbies).\n"
-                "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts.\n"
-            )
-        },
-        {"role": "user", "content": f"Description: {description}\n\nCategory:"}
-    ]
     try:
+        # Define the prompt and call the API
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            max_tokens=5,
-            temperature=0
+            model="gpt-4",  # You can use "gpt-3.5-turbo" if GPT-4 isn't available
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are an assistant that categorizes expenses into one of the following categories: "
+                        "Needs, Wants, Savings/Debt Repayment.\n"
+                        "Only respond with the category name.\n"
+                        "\n"
+                        "**Definitions:**\n"
+                        "- **Needs**: Essential expenses required for basic living (e.g., rent, utilities, groceries, transportation for work).\n"
+                        "- **Wants**: Non-essential expenses for enjoyment (e.g., dining out, entertainment, vacations, hobbies).\n"
+                        "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts.\n"
+                    )
+                },
+                {"role": "user", "content": f"Description: {description}\n\nCategory:"},
+            ]
         )
+
+        # Extract and clean the response
         category = response['choices'][0]['message']['content'].strip()
         if category not in categories:
             category = "Others"
@@ -158,4 +158,5 @@ if os.path.exists("expenses.csv"):
     st.line_chart(expenses_by_date)
 else:
     st.write("No expenses have been added yet.")
+
 
