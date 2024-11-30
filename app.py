@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import os
 import openai
-import dotenv
+from dotenv import load_dotenv
 
 # Load environment variables from .env file
-dotenv.load_dotenv()
+load_dotenv()
 
 # Set the page title
 st.title("Personal Expense Tracker with 50/30/20 Rule")
@@ -16,32 +16,28 @@ categories = ["Needs", "Wants", "Savings/Debt Repayment"]
 # Set your OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Function to get category from OpenAI using the updated interface
+# Function to get category from OpenAI using the updated API
 def get_category(description):
     try:
-        # Define the prompt and call the API
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # You can use "gpt-3.5-turbo" if GPT-4 isn't available
+            model="gpt-4",  # Or "gpt-3.5-turbo"
             messages=[
                 {
                     "role": "system",
                     "content": (
                         "You are an assistant that categorizes expenses into one of the following categories: "
-                        "Needs, Wants, Savings/Debt Repayment.\n"
-                        "Only respond with the category name.\n"
-                        "\n"
+                        "Needs, Wants, Savings/Debt Repayment. Only respond with the category name.\n\n"
                         "**Definitions:**\n"
                         "- **Needs**: Essential expenses required for basic living (e.g., rent, utilities, groceries, transportation for work).\n"
                         "- **Wants**: Non-essential expenses for enjoyment (e.g., dining out, entertainment, vacations, hobbies).\n"
-                        "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts.\n"
+                        "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts."
                     )
                 },
-                {"role": "user", "content": f"Description: {description}\n\nCategory:"},
+                {"role": "user", "content": f"Description: {description}\n\nCategory:"}
             ]
         )
-
         # Extract and clean the response
-        category = response['choices'][0]['message']['content'].strip()
+        category = response.choices[0].message['content'].strip()
         if category not in categories:
             category = "Others"
         return category
