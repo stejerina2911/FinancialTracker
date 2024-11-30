@@ -1,20 +1,16 @@
 import streamlit as st
 import pandas as pd
 import os
-from dotenv import load_dotenv
 import openai
 
-# Load environment variables from .env file
-load_dotenv()
+# Load the API key from environment variable (set in GitHub Secrets)
+openai.api_key = os.getenv("API_KEY")
 
 # Set the page title
 st.title("Personal Expense Tracker with 50/30/20 Rule")
 
 # Define 50/30/20 categories
 categories = ["Needs", "Wants", "Savings/Debt Repayment"]
-
-# Set your OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Function to get category from OpenAI using the latest API
 def get_category(description):
