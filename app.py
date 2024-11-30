@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import os
-import openai
 from dotenv import load_dotenv
+import openai
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,27 +16,24 @@ categories = ["Needs", "Wants", "Savings/Debt Repayment"]
 # Set your OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Function to get category from OpenAI using the updated API
+# Function to get category from OpenAI using the latest API
 def get_category(description):
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",  # Or "gpt-3.5-turbo"
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are an assistant that categorizes expenses into one of the following categories: "
-                        "Needs, Wants, Savings/Debt Repayment. Only respond with the category name.\n\n"
-                        "**Definitions:**\n"
-                        "- **Needs**: Essential expenses required for basic living (e.g., rent, utilities, groceries, transportation for work).\n"
-                        "- **Wants**: Non-essential expenses for enjoyment (e.g., dining out, entertainment, vacations, hobbies).\n"
-                        "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts."
-                    )
-                },
+                {"role": "system", "content": (
+                    "You are an assistant that categorizes expenses into one of the following categories: "
+                    "Needs, Wants, Savings/Debt Repayment. Only respond with the category name.\n\n"
+                    "**Definitions:**\n"
+                    "- **Needs**: Essential expenses required for basic living (e.g., rent, utilities, groceries, transportation for work).\n"
+                    "- **Wants**: Non-essential expenses for enjoyment (e.g., dining out, entertainment, vacations, hobbies).\n"
+                    "- **Savings/Debt Repayment**: Money set aside for savings, investments, or paying off debts."
+                )},
                 {"role": "user", "content": f"Description: {description}\n\nCategory:"}
             ]
         )
-        # Extract and clean the response
+        # Extract the content from the response
         category = response.choices[0].message['content'].strip()
         if category not in categories:
             category = "Others"
@@ -154,5 +151,4 @@ if os.path.exists("expenses.csv"):
     st.line_chart(expenses_by_date)
 else:
     st.write("No expenses have been added yet.")
-
 
